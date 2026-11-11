@@ -1,0 +1,73 @@
+{
+    "name": "sendio/sendio-laravel",
+    "description": "Official send.io integration for Laravel: mail transport, facade and webhooks.",
+    "keywords": [
+        "php",
+        "sendio",
+        "send.io",
+        "email",
+        "laravel",
+        "mail",
+        "sdk",
+        "api",
+        "client"
+    ],
+    "homepage": "https://send.io",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "send.io",
+            "email": "support@send.io",
+            "homepage": "https://send.io"
+        }
+    ],
+    "support": {
+        "email": "support@send.io",
+        "docs": "https://developer.send.io/docs/api"
+    },
+    "require": {
+        "php": "^8.1",
+        "illuminate/http": "^10.0|^11.0|^12.0|^13.0",
+        "illuminate/support": "^10.0|^11.0|^12.0|^13.0",
+        "sendio/sendio-php": "^1.0",
+        "symfony/mailer": "^6.2|^7.0|^8.0"
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.14",
+        "mockery/mockery": "^1.5",
+        "orchestra/testbench": "^8.17|^9.0|^10.8|^11.0",
+        "pestphp/pest": "^1.0|^2.0|^3.7|^4.0|^5.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Sendio\\Laravel\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Sendio\\Laravel\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-main": "1.x-dev"
+        },
+        "laravel": {
+            "providers": [
+                "Sendio\\Laravel\\SendioServiceProvider"
+            ]
+        }
+    },
+    "archive": {
+        "exclude": ["/vendor", "/composer.lock", "/.phpunit.cache", "/build", "/tests", "/examples"]
+    },
+    "config": {
+        "sort-packages": true,
+        "preferred-install": "dist",
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

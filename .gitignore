@@ -1,0 +1,15 @@
+# Dependencies and lock file (libraries do not ship a lock file)
+/vendor/
+composer.lock
+
+# Test and tool caches
+/.phpunit.cache
+.phpunit.result.cache
+.php-cs-fixer.cache
+
+# Build outputs and the throwaway Laravel app used by examples/smoke.sh
+/build/
+*.zip
+*.tar
+
+.DS_Store

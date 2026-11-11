@@ -1,0 +1,329 @@
+<?php
+
+namespace Sendio\Laravel\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Str;
+use Sendio\Laravel\Events\ContactCreated;
+use Sendio\Laravel\Events\ContactDeleted;
+use Sendio\Laravel\Events\ContactTopicsUpdated;
+use Sendio\Laravel\Events\ContactUpdated;
+use Sendio\Laravel\Events\DomainCreated;
+use Sendio\Laravel\Events\DomainDeleted;
+use Sendio\Laravel\Events\DomainUpdated;
+use Sendio\Laravel\Events\EmailBounced;
+use Sendio\Laravel\Events\EmailClicked;
+use Sendio\Laravel\Events\EmailComplained;
+use Sendio\Laravel\Events\EmailDelivered;
+use Sendio\Laravel\Events\EmailDeliveryDelayed;
+use Sendio\Laravel\Events\EmailFailed;
+use Sendio\Laravel\Events\EmailOpened;
+use Sendio\Laravel\Events\EmailReceived;
+use Sendio\Laravel\Events\EmailScheduled;
+use Sendio\Laravel\Events\EmailSent;
+use Sendio\Laravel\Events\EmailSuppressed;
+use Sendio\Laravel\Events\SuppressionAdded;
+use Sendio\Laravel\Events\SuppressionRemoved;
+use Sendio\Laravel\Events\TopicCreated;
+use Sendio\Laravel\Events\TopicDeleted;
+use Sendio\Laravel\Events\TopicUpdated;
+use Sendio\Laravel\Http\Middleware\VerifyWebhookSignature;
+use Symfony\Component\HttpFoundation\Response;
+
+class WebhookController extends Controller
+{
+    /**
+     * Create a new webhook controller instance.
+     */
+    public function __construct()
+    {
+        if (config('sendio.webhook.secret')) {
+            $this->middleware(VerifyWebhookSignature::class);
+        }
+    }
+
+    /**
+     * Handle a send.io webhook call.
+     */
+    public function handleWebhook(Request $request): Response
+    {
+        $payload = json_decode($request->getContent(), true);
+
+        if (is_null($payload) || ! isset($payload['type'])) {
+            return new Response('Invalid payload', 400);
+        }
+
+        $headers = $this->extractHeaders($request);
+
+        $method = 'handle' . Str::studly(str_replace('.', '_', $payload['type']));
+
+        if (method_exists($this, $method)) {
+            $response = $this->{$method}($payload, $headers);
+
+            return $response;
+        }
+
+        return $this->missingMethod($payload);
+    }
+
+    /**
+     * Extract the Svix webhook headers from the request so listeners can use
+     * them (e.g. `svix-id` as a deduplication key).
+     *
+     * @return array<string, string>
+     */
+    protected function extractHeaders(Request $request): array
+    {
+        return collect(['svix-id', 'svix-timestamp', 'svix-signature'])
+            ->mapWithKeys(fn (string $key) => [$key => $request->header($key)])
+            ->filter()
+            ->all();
+    }
+
+    /**
+     * Handle contact created event.
+     */
+    protected function handleContactCreated(array $payload, array $headers = []): Response
+    {
+        ContactCreated::dispatch($payload, $headers);
+
+        return $this->successMethod();
+    }
+
+    /**
+     * Handle contact deleted event.
+     */
+    protected function handleContactDeleted(array $payload, array $headers = []): Response
+    {
+        ContactDeleted::dispatch($payload, $headers);
+
+        return $this->successMethod();
+    }
+
+    /**
+     * Handle contact topics updated event.
+     */
+    protected function handleContactTopicsUpdated(array $payload, array $headers = []): Response
+    {
+        ContactTopicsUpdated::dispatch($payload, $headers);
+
+        return $this->successMethod();
+    }
+
+    /**
+     * Handle contact updated event.
+     */
+    protected function handleContactUpdated(array $payload, array $headers = []): Response
+    {
+        ContactUpdated::dispatch($payload, $headers);
+
+        return $this->successMethod();
+    }
+
+    /**
+     * Handle domain created event.
+     */
+    protected function handleDomainCreated(array $payload, array $headers = []): Response
+    {
+        DomainCreated::dispatch($payload, $headers);
+
+        return $this->successMethod();
+    }
+
+    /**
+     * Handle domain deleted event.
+     */
+    protected function handleDomainDeleted(array $payload, array $headers = []): Response
+    {
+        DomainDeleted::dispatch($payload, $headers);
+
+        return $this->successMethod();
+    }
+
+    /**
+     * Handle domain updated event.
+     */
+    protected function handleDomainUpdated(array $payload, array $headers = []): Response
+    {
+        DomainUpdated::dispatch($payload, $headers);
+
+        return $this->successMethod();
+    }
+
+    /**
+     * Handle email bounced event.
+     */
+    protected function handleEmailBounced(array $payload, array $headers = []): Response
+    {
+        EmailBounced::dispatch($payload, $headers);
+
+        return $this->successMethod();
+    }
+
+    /**
+     * Handle email clicked event.
+     */
+    protected function handleEmailClicked(array $payload, array $headers = []): Response
+    {
+        EmailClicked::dispatch($payload, $headers);
+
+        return $this->successMethod();
+    }
+
+    /**
+     * Handle email complained event.
+     */
+    protected function handleEmailComplained(array $payload, array $headers = []): Response
+    {
+        EmailComplained::dispatch($payload, $headers);
+
+        return $this->successMethod();
+    }
+
+    /**
+     * Handle email delivered event.
+     */
+    protected function handleEmailDelivered(array $payload, array $headers = []): Response
+    {
+        EmailDelivered::dispatch($payload, $headers);
+
+        return $this->successMethod();
+    }
+
+    /**
+     * Handle email delivery delayed event.
+     */
+    protected function handleEmailDeliveryDelayed(array $payload, array $headers = []): Response
+    {
+        EmailDeliveryDelayed::dispatch($payload, $headers);
+
+        return $this->successMethod();
+    }
+
+    /**
+     * Handle email opened event.
+     */
+    protected function handleEmailOpened(array $payload, array $headers = []): Response
+    {
+        EmailOpened::dispatch($payload, $headers);
+
+        return $this->successMethod();
+    }
+
+    /**
+     * Handle email sent event.
+     */
+    protected function handleEmailSent(array $payload, array $headers = []): Response
+    {
+        EmailSent::dispatch($payload, $headers);
+
+        return $this->successMethod();
+    }
+
+    /**
+     * Handle email failed event.
+     */
+    protected function handleEmailFailed(array $payload, array $headers = []): Response
+    {
+        EmailFailed::dispatch($payload, $headers);
+
+        return $this->successMethod();
+    }
+
+    /**
+     * Handle email suppressed event.
+     */
+    protected function handleEmailSuppressed(array $payload, array $headers = []): Response
+    {
+        EmailSuppressed::dispatch($payload, $headers);
+
+        return $this->successMethod();
+    }
+
+    /**
+     * Handle email scheduled event.
+     */
+    protected function handleEmailScheduled(array $payload, array $headers = []): Response
+    {
+        EmailScheduled::dispatch($payload, $headers);
+
+        return $this->successMethod();
+    }
+
+    /**
+     * Handle email received event.
+     */
+    protected function handleEmailReceived(array $payload, array $headers = []): Response
+    {
+        EmailReceived::dispatch($payload, $headers);
+
+        return $this->successMethod();
+    }
+
+    /**
+     * Handle suppression added event.
+     */
+    protected function handleSuppressionAdded(array $payload, array $headers = []): Response
+    {
+        SuppressionAdded::dispatch($payload, $headers);
+
+        return $this->successMethod();
+    }
+
+    /**
+     * Handle suppression removed event.
+     */
+    protected function handleSuppressionRemoved(array $payload, array $headers = []): Response
+    {
+        SuppressionRemoved::dispatch($payload, $headers);
+
+        return $this->successMethod();
+    }
+
+    /**
+     * Handle topic created event.
+     */
+    protected function handleTopicCreated(array $payload, array $headers = []): Response
+    {
+        TopicCreated::dispatch($payload, $headers);
+
+        return $this->successMethod();
+    }
+
+    /**
+     * Handle topic deleted event.
+     */
+    protected function handleTopicDeleted(array $payload, array $headers = []): Response
+    {
+        TopicDeleted::dispatch($payload, $headers);
+
+        return $this->successMethod();
+    }
+
+    /**
+     * Handle topic updated event.
+     */
+    protected function handleTopicUpdated(array $payload, array $headers = []): Response
+    {
+        TopicUpdated::dispatch($payload, $headers);
+
+        return $this->successMethod();
+    }
+
+    /**
+     * Handle successful calls on the controller.
+     */
+    protected function successMethod($parameters = []): Response
+    {
+        return new Response('Webhook handled', 200);
+    }
+
+    /**
+     * Handle calls to missing methods on the controller.
+     */
+    protected function missingMethod($parameters = []): Response
+    {
+        return new Response;
+    }
+}
