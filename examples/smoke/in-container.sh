@@ -9,9 +9,9 @@ if [ ! -f artisan ]; then
 fi
 
 composer config repositories.sendio-php \
-  '{"type":"path","url":"/sdks/php","options":{"symlink":false,"versions":{"sendio/sendio-php":"1.0.0"}}}'
+  '{"type":"path","url":"/sdks/php","options":{"symlink":false,"versions":{"sendio/sendio-php":"1.1.0"}}}'
 composer config repositories.sendio-laravel \
-  '{"type":"path","url":"/sdks/laravel","options":{"symlink":false,"versions":{"sendio/sendio-laravel":"1.0.0"}}}'
+  '{"type":"path","url":"/sdks/laravel","options":{"symlink":false,"versions":{"sendio/sendio-laravel":"1.1.0"}}}'
 composer require --no-interaction --no-progress 'sendio/sendio-laravel:^1.0'
 
 # Register the "sendio" mailer in config/mail.php and set .env values.

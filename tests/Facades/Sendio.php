@@ -15,6 +15,7 @@ use Sendio\Service\Mailbox;
 use Sendio\Service\Segment;
 use Sendio\Service\Template;
 use Sendio\Service\Topic;
+use Sendio\Service\Transactional;
 use Sendio\Service\Webhook;
 
 it('resolves Sendio client', function () {
@@ -47,6 +48,7 @@ it('can get an API service', function () {
         ->and(Sendio::segments())->toBeInstanceOf(Segment::class)
         ->and(Sendio::templates())->toBeInstanceOf(Template::class)
         ->and(Sendio::topics())->toBeInstanceOf(Topic::class)
+        ->and(Sendio::transactional())->toBeInstanceOf(Transactional::class)
         ->and(Sendio::webhooks())->toBeInstanceOf(Webhook::class);
 });
 

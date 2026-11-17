@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static \Sendio\Service\Mailbox mailboxes()
  * @method static \Sendio\Service\Segment segments()
  * @method static \Sendio\Service\Template templates()
+ * @method static \Sendio\Service\Transactional transactional()
  * @method static \Sendio\Service\Topic topics()
  * @method static \Sendio\Service\Usage usage()
  * @method static \Sendio\Service\Webhook webhooks()

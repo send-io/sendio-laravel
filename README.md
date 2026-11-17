@@ -89,6 +89,20 @@ Sendio::domains()->update($domain->id, ['capabilities' => ['receiving' => 'disab
 // Mailboxes (IMAP/SMTP email accounts)
 $mailbox = Sendio::mailboxes()->create(['address' => 'ada@yourdomain.com']);
 Sendio::mailboxes()->update($mailbox->id, ['warmup_enabled' => false]);
+
+// Transactional emails: save the envelope of a published template once, then
+// send it by id with only the recipient and the variables.
+$tx = Sendio::transactional()->create([
+    'name' => 'Sign-in code',
+    'template_id' => 'signin-code',
+    'from' => 'Acme <security@yourdomain.com>',
+    'subject' => 'Your code is {{CODE}}',
+]);
+Sendio::emails()->send([
+    'transactional_id' => $tx->id,
+    'to' => 'ada@example.com',
+    'variables' => ['CODE' => '123456'],
+]);
 ```
 
 The `Sendio\Contracts\Client` (and `Sendio\Client`) binding is also available for dependency injection.
