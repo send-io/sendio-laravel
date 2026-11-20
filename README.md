@@ -34,9 +34,11 @@ Then select it in `.env`:
 
 ```ini
 MAIL_MAILER=sendio
-MAIL_FROM_ADDRESS=onboarding@yourdomain.com
+MAIL_FROM_ADDRESS=onboarding@send.io
 MAIL_FROM_NAME=Acme
 ```
+
+The examples below send from `onboarding@send.io` to the test address `delivered@send.io`, so it works on a new account before you add a domain. `onboarding@send.io` can only send to test addresses. To email real people, send from an address on a domain you verified. A free mailbox works too once Mailboxes shows it can send.
 
 Every Laravel mail API now goes through send.io:
 
@@ -174,6 +176,16 @@ vendor/bin/pest
 # Live test in a fresh Laravel app in Docker (sends one email):
 SENDIO_API_KEY=mx_... SENDIO_BASE_URL=https://api.send.io examples/smoke.sh
 ```
+
+## Releasing
+
+For maintainers. Releases go out from GitHub Actions on the public copy of this SDK, [send-io/sendio-laravel](https://github.com/send-io/sendio-laravel), not from a laptop:
+
+1. In send-io-core, add the `CHANGELOG.md` entry for the new version (the package has no version constant, the newest entry is its version), update the version shown in the console docs (a console test compares them), then merge into `develop`.
+2. Sync the public copy: replace its files with this folder's tracked files at the merged commit (`git ls-files`, since `.gitattributes` drops the tests from archives), remove the `repositories` block from `composer.json`, commit it as `sync with send-io-core <short sha>` and push `main`.
+3. Run the Tag release workflow (`.github/workflows/tag.yml`) by hand on the public repository. It reads the version from the newest `CHANGELOG.md` entry, runs the tests and pushes the matching `vX.Y.Z` tag, or does nothing if the tag exists.
+
+Packagist has no hook on the repository yet: press Update on packagist.org/packages/sendio/sendio-laravel.
 
 ## License
 
